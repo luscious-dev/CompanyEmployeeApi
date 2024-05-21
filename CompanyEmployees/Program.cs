@@ -1,11 +1,14 @@
 using CompanyEmployees.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using NLog;
 
 // 1. Creates an instance of WebApplicationBuilder
 // 2. Adds Configuration to the project using builder.Configuration
 // 3. Loggin configuration with builder.Logging
 // 4. IHostBuilder and IWebHostBuilder configuration
 var builder = WebApplication.CreateBuilder(args);
+
+LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
