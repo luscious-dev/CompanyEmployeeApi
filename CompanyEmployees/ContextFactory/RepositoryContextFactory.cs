@@ -20,7 +20,9 @@ namespace CompanyEmployees.ContextFactory
             Console.WriteLine(Directory.GetCurrentDirectory());
 
             var builder = new DbContextOptionsBuilder<RepositoryContext>()
-                .UseSqlServer(configuration.GetConnectionString("SqlConnection"));
+                .UseSqlServer(configuration.GetConnectionString("SqlConnection"), 
+                b => b.MigrationsAssembly("CompanyEmployees"));
+            // We had to include this because migration assembly is not in out main project but in the Repository project
 
             return new RepositoryContext(builder.Options);
         }
