@@ -14,8 +14,13 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureRepositoryManager();
+builder.Services.ConfigureServiceManager();
+builder.Services.ConfigureSqlContext(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+    // Without this linke of code, our API would not work because it wouldn't know
+    // where to route incoming requests. But now it will know where to find the controllers
 
 var app = builder.Build();
 
