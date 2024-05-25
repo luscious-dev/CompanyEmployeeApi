@@ -1,6 +1,7 @@
 using CompanyEmployees.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Service;
 
 // 1. Creates an instance of WebApplicationBuilder
 // 2. Adds Configuration to the project using builder.Configuration
@@ -16,6 +17,7 @@ builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);

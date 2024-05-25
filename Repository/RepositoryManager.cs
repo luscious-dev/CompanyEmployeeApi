@@ -1,9 +1,4 @@
 ﻿using Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -23,7 +18,5 @@ namespace Repository
         public ICompanyRepository Company => _companyRepository.Value;
         public IEmployeeRepository Employee => _employeeRepository.Value;
         public void Save() => _repositoryContext.SaveChanges();
-
-
     }
 }
