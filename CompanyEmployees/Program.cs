@@ -1,4 +1,6 @@
+using CompanyEmployees;
 using CompanyEmployees.Extensions;
+using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using Service;
@@ -19,17 +21,28 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddControllers()
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+builder.Services.AddControllers(config => { config.RespectBrowserAcceptHeader = true; config.ReturnHttpNotAcceptable = true })
+    .AddXmlDataContractSerializerFormatters()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
     // Without this linke of code, our API would not work because it wouldn't know
     // where to route incoming requests. But now it will know where to find the controllers
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-    app.UseDeveloperExceptionPage();
-else
-    app.UseHsts();  // Adds strict-transport-security header
+//var logger = app.Services.GetRequiredService<ILoggerManager>();
+//app.ConfigureExceptionHandler(logger);
+
+app.UseExceptionHandler(opt => { });
+
+if (app.Environment.IsProduction())
+    app.UseHsts();
+
+//if (app.Environment.IsDevelopment())
+//    app.UseDeveloperExceptionPage();
+//else
+//    app.UseHsts();
 
 // Configure the HTTP request pipeline.
 
