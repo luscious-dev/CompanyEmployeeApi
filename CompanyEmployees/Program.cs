@@ -2,6 +2,7 @@ using CompanyEmployees;
 using CompanyEmployees.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using NLog;
 using Service;
 
@@ -21,9 +22,16 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    // To disable the default api controller error handling for invalid state.
+    // This is so we can use our custom error handling
+    options.SuppressModelStateInvalidFilter = true;
+});
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-builder.Services.AddControllers(config => { config.RespectBrowserAcceptHeader = true; config.ReturnHttpNotAcceptable = true })
+builder.Services.AddControllers(config => { config.RespectBrowserAcceptHeader = true; config.ReturnHttpNotAcceptable = true; })
     .AddXmlDataContractSerializerFormatters()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
     // Without this linke of code, our API would not work because it wouldn't know
