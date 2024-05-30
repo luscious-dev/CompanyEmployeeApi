@@ -47,6 +47,17 @@ namespace Service
             return (companies: companyCollectionToReturn, ids: ids);
         }
 
+        public void DeleteCompany(Guid companyId, bool trackChanges)
+        {
+            var company = _repositoryManager.Company.GetCompany(companyId, trackChanges);
+
+            if(company == null)
+                throw new CompanyNotFoundException(companyId);
+
+            _repositoryManager.Company.DeleteCompany(company);
+            _repositoryManager.Save();
+        }
+
         public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
         {
             var companies = _repositoryManager.Company.GetAllCompanies(trackChanges);

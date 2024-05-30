@@ -34,5 +34,26 @@ namespace CompanyEmployees.Presentation.Controllers
             var employeeResult = _serviceManager.EmployeeService.CreateEmployeeForCompany(companyId, employee, false);
             return CreatedAtRoute("GetEmployeeForCompany", new { companyId, employeeId = employeeResult.Id }, employeeResult);
         }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteEmployeeForCompany(Guid companyId,Guid id)
+        {
+            _serviceManager.EmployeeService.DeleteEmployeeForCompany(companyId, id, false);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+
+        // Put request is a request for full update. If we set only the Age property
+        // in the DTO, the age will be updated but the other properties will be set to
+        // their default values
+        public ActionResult UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employeeForUpdate)
+        {
+            if (employeeForUpdate is null)
+                return BadRequest("Employee update object is null");
+
+            _serviceManager.EmployeeService.UpdateEmployeeForCompany(companyId, id, employeeForUpdate, false, true);
+            return NoContent();
+        }
     }
 }
