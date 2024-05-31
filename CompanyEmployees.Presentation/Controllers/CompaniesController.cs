@@ -61,5 +61,12 @@ namespace CompanyEmployees.Presentation.Controllers
             _serviceManager.CompanyService.DeleteCompany(id, false);
             return NoContent();
         }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto companyForUpdate)
+        {
+            _serviceManager.CompanyService.UpdateCompany(id, companyForUpdate, true);
+            return NoContent();
+        }
     }
 }

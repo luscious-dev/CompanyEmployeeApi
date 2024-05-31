@@ -3,6 +3,8 @@ using CompanyEmployees.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using NLog;
 using Service;
 
@@ -31,11 +33,27 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-builder.Services.AddControllers(config => { config.RespectBrowserAcceptHeader = true; config.ReturnHttpNotAcceptable = true; })
+// We don't want to replace system.text.json with newtonsoft json so we create the following formatter
+// This function configures support for JSON patch while leaving all other formatters unchanged
+NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+{
+    return new ServiceCollection().AddLogging()
+        .AddMvc().AddNewtonsoftJson()
+        .Services.BuildServiceProvider()
+        .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+        .OfType<NewtonsoftJsonPatchInputFormatter>().First();
+}
+
+builder.Services.AddControllers(config =>
+    {
+        config.RespectBrowserAcceptHeader = true;
+        config.ReturnHttpNotAcceptable = true;
+        config.InputFormatters.Insert(0, GetJsonPatchInputFormatter()); // we make use of the formatter here
+    })
     .AddXmlDataContractSerializerFormatters()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
-    // Without this linke of code, our API would not work because it wouldn't know
-    // where to route incoming requests. But now it will know where to find the controllers
+// Without this linke of code, our API would not work because it wouldn't know
+// where to route incoming requests. But now it will know where to find the controllers
 
 var app = builder.Build();
 
