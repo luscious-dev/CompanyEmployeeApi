@@ -1,5 +1,6 @@
 using CompanyEmployees;
 using CompanyEmployees.Extensions;
+using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
         .OfType<NewtonsoftJsonPatchInputFormatter>().First();
 }
-
+builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true;

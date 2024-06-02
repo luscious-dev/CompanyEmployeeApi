@@ -32,6 +32,12 @@ namespace CompanyEmployees.Presentation.Controllers
         [HttpPost]
         public ActionResult CreateEmployeeForCompany(Guid companyId, EmployeeForCreationDto employee)
         {
+            if (employee is null)
+                return BadRequest("EmployeeObject DTO is null");
+
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             var employeeResult = _serviceManager.EmployeeService.CreateEmployeeForCompany(companyId, employee, false);
             return CreatedAtRoute("GetEmployeeForCompany", new { companyId, employeeId = employeeResult.Id }, employeeResult);
         }
@@ -53,6 +59,9 @@ namespace CompanyEmployees.Presentation.Controllers
             if (employeeForUpdate is null)
                 return BadRequest("Employee update object is null");
 
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             _serviceManager.EmployeeService.UpdateEmployeeForCompany(companyId, id, employeeForUpdate, false, true);
             return NoContent();
         }
@@ -66,7 +75,12 @@ namespace CompanyEmployees.Presentation.Controllers
 
             var result = _serviceManager.EmployeeService.GetEmployeeForPatch(companyId, id, false, true);
             
-            patchDoc.ApplyTo(result.employeeToPatch);
+            patchDoc.ApplyTo(result.employeeToPatch, ModelState);
+
+            TryValidateModel(result.employeeToPatch);
+
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
 
             _serviceManager.EmployeeService.SaveChangesForPatch(result.employeeToPatch, result.employeeEntity);
             
