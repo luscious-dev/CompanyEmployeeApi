@@ -21,7 +21,8 @@ namespace CompanyEmployees.Extensions
                     // Instead of AllowAnyHeader, use WithHeaders("accept", "content-type")
                     builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("X-Pagination");
                 });
             });
         }
