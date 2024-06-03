@@ -27,6 +27,9 @@ namespace Service
 
             if (company == null) throw new CompanyNotFoundException(companyId);
 
+            if (!employeeParameters.ValidAgeRange)
+                throw new MaxAgeRangeBadRequestException();
+
             var employeesWithMetaData = await _repositoryManager.Employee.GetEmployeesAsync(companyId, employeeParameters,  trackChanges);
             var employeesDto =  _mapper.Map<IEnumerable<EmployeeDto>>(employeesWithMetaData);
             return (employeesDto, employeesWithMetaData.MetaData);

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Entities.Exceptions
 {
-    internal class MaxAgeRangeBadRequestException
+    public class MaxAgeRangeBadRequestException:BadRequestException
     {
+        public MaxAgeRangeBadRequestException() : base("Max age can't be less than min age.") { }
     }
 }
