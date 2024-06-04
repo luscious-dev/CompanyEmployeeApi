@@ -13,12 +13,14 @@ namespace Service
         private readonly IRepositoryManager _repositoryManager;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
+        private readonly IDataShaper<EmployeeDto> _dataShaper;
 
-        public EmployeeService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper)
+        public EmployeeService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<EmployeeDto> dataShaper)
         {
             _repositoryManager = repositoryManager;
             _logger = logger;
             _mapper = mapper;
+            _dataShaper = dataShaper;
         }
 
         public async Task<(IEnumerable<EmployeeDto> employees, MetaData metadata)> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
@@ -35,14 +37,14 @@ namespace Service
             return (employeesDto, employeesWithMetaData.MetaData);
         }
 
-        public EmployeeDto GetEmployee(Guid companyId, Guid employeeId,  bool trackChanges)
+        public async Task<EmployeeDto> GetEmployeeAsync(Guid companyId, Guid employeeId,  bool trackChanges)
         {
-            var company = _repositoryManager.Company.GetCompanyAsync(companyId, false);
+            var company = await _repositoryManager.Company.GetCompanyAsync(companyId, false);
 
             if (company == null)
                 throw new CompanyNotFoundException(companyId);
 
-            var employee = _repositoryManager.Employee.GetEmployee(companyId, employeeId, trackChanges);
+            var employee = await _repositoryManager.Employee.GetEmployeeAsync(companyId, employeeId, trackChanges);
 
             if (employee == null)
                 throw new EmployeeNotFoundException(employeeId);
@@ -72,7 +74,7 @@ namespace Service
             if(company == null)
                 throw new CompanyNotFoundException(companyId);
 
-            var employeeForCompany = _repositoryManager.Employee.GetEmployee(companyId, id, trackChanges);
+            var employeeForCompany = await _repositoryManager.Employee.GetEmployeeAsync(companyId, id, trackChanges);
             if(employeeForCompany == null)
                 throw new EmployeeNotFoundException(id);
 
@@ -86,7 +88,7 @@ namespace Service
             if(company is null)
                 throw new CompanyNotFoundException(companyId);
 
-            var employeeEntity = _repositoryManager.Employee.GetEmployee(companyId, id, empTrackChanges);
+            var employeeEntity = _repositoryManager.Employee.GetEmployeeAsync(companyId, id, empTrackChanges);
             if (employeeEntity is null)
                 throw new EmployeeNotFoundException(id);
 
@@ -94,13 +96,13 @@ namespace Service
             await _repositoryManager.SaveAsync();
         }
 
-        public (EmployeeForUpdateDto employeeToPatch, Employee employeeEntity) GetEmployeeForPatch(Guid companyid, Guid id, bool compTrackChanges, bool empTrackChanges)
+        public async Task<(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)> GetEmployeeForPatchAsync(Guid companyid, Guid id, bool compTrackChanges, bool empTrackChanges)
         {
-            var company = _repositoryManager.Company.GetCompanyAsync(companyid, compTrackChanges);
+            var company = await _repositoryManager.Company.GetCompanyAsync(companyid, compTrackChanges);
             if(company is null)
                 throw new CompanyNotFoundException(companyid);
 
-            var employeeEntity = _repositoryManager.Employee.GetEmployee(companyid, id, empTrackChanges);
+            var employeeEntity = await _repositoryManager.Employee.GetEmployeeAsync(companyid, id, empTrackChanges);
             if(employeeEntity is null)
                 throw new EmployeeNotFoundException(id);
 

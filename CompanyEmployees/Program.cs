@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
 using Service;
+using Service.DataShaping;
+using Shared.DataTransferObjects;
 
 // 1. Creates an instance of WebApplicationBuilder
 // 2. Adds Configuration to the project using builder.Configuration
@@ -45,6 +47,8 @@ NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
         .OfType<NewtonsoftJsonPatchInputFormatter>().First();
 }
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true;

@@ -27,9 +27,9 @@ namespace CompanyEmployees.Presentation.Controllers
         }
 
         [HttpGet("{employeeId}")]
-        public ActionResult GetEmployee(Guid companyId, Guid employeeId)
+        public async Task<ActionResult> GetEmployee(Guid companyId, Guid employeeId)
         {
-            var employee = _serviceManager.EmployeeService.GetEmployee(companyId, employeeId, false);
+            var employee = await _serviceManager.EmployeeService.GetEmployeeAsync(companyId, employeeId, false);
             return Ok(employee);
         }
 
@@ -71,12 +71,12 @@ namespace CompanyEmployees.Presentation.Controllers
 
         // Set the content type to application/json-patch+json for it work well
         [HttpPatch("{id:guid}")]
-        public IActionResult PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] JsonPatchDocument<EmployeeForUpdateDto> patchDoc)
+        public async Task<IActionResult> PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] JsonPatchDocument<EmployeeForUpdateDto> patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("PatchDoc object sent from the client is null.");
 
-            var result = _serviceManager.EmployeeService.GetEmployeeForPatch(companyId, id, false, true);
+            var result = await _serviceManager.EmployeeService.GetEmployeeForPatchAsync(companyId, id, false, true);
             
             patchDoc.ApplyTo(result.employeeToPatch, ModelState);
 
