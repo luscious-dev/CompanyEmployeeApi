@@ -60,6 +60,13 @@ builder.Services.AddControllers(config =>
 // Without this linke of code, our API would not work because it wouldn't know
 // where to route incoming requests. But now it will know where to find the controllers
 
+builder.Services.AddCustomMediaTypes();
+builder.Services.ConfigureVersioning();
+
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJwt(builder.Configuration);
+
 var app = builder.Build();
 
 //var logger = app.Services.GetRequiredService<ILoggerManager>();
@@ -86,6 +93,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
